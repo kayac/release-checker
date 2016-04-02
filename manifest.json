@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "manifest_version": 2,
   "icons": {
-      "128": "release-checker.jpg"
+    "128": "icon/128.jpg"
   },
   "description": "今見ているページがリリースできるシロモノなのかを表示します",
   "content_scripts": [
