@@ -1,0 +1,23 @@
+{
+  "name": "release checker",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "icons": {
+      "128": "release-checker.jpg"
+  },
+  "description": "今見ているページがリリースできるシロモノなのかを表示します",
+  "content_scripts": [
+    {
+      "matches": [ "<all_urls>" ],
+      "js": [
+        "content-script/release-checker.js"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    "web/release-checker.js"
+  ],
+  "permissions": [
+    "<all_urls>"
+  ]
+}
