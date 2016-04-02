@@ -22,11 +22,20 @@ console.group(CONSOLE_GROUP_NAME);
         }
     }),
     new ReleaseTest({
-        name: 'og:image', 
+        name: 'OGP Image', 
         validMessage: 'OGP画像が設定されています',
         errorMessage: 'OGP画像がありません',
         checker: (cb) => {
             var meta = document.querySelector('meta[property="og:image"]');
+            return meta;
+        }
+    }),
+    new ReleaseTest({
+        name: 'Twitter Cards', 
+        validMessage: 'Twitter cardsが設定されています',
+        errorMessage: 'Twitter cardsがありません',
+        checker: (cb) => {
+            var meta = document.querySelector('meta[property="twitter:image"]');
             return meta;
         }
     })
