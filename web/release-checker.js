@@ -35,7 +35,7 @@ console.group(CONSOLE_GROUP_NAME);
         validMessage: 'Twitter cardsが設定されています',
         errorMessage: 'Twitter cardsがありません',
         checker: (cb) => {
-            var meta = document.querySelector('meta[property="twitter:image"]');
+            var meta = document.querySelector('meta[property="twitter:image"]') || document.querySelector('meta[name="twitter:image"]');
             return meta;
         }
     })
