@@ -1,5 +1,7 @@
 const CONSOLE_GROUP_NAME = 'release-checker';
 
+const testArr = [];
+
 class ReleaseTest {
     constructor (opts) {
         this.name = opts.name;
@@ -27,12 +29,12 @@ console.group(CONSOLE_GROUP_NAME);
         errorMessage: 'OGP画像がありません',
         check: () => {
             return new Promise((resolve, reject) => {
-                var meta = document.querySelector('meta[property="og:image"]');
+                const meta = document.querySelector('meta[property="og:image"]');
 
-                if (false) {
-                    resolve(200);
+                if (meta) {
+                    resolve();
                 } else {
-                    reject(500);
+                    reject();
                 }
             });
         }
@@ -50,23 +52,42 @@ console.group(CONSOLE_GROUP_NAME);
     const check = test.check();
 
     if (check instanceof Promise) {
-        check
-            .then((res) => {
-                console.log(res);
-            })
-            .catch((res) => {
-                console.log(res);
-            })
-        ;
-    } else {
-        const res = check;
+        const promise = new Promise((resolve) => {
+            check
+                .then((_res) => {
+                    resolve(test.validMessage);
+                })
+                .catch((_res) => {
+                    resolve(test.errorMessage);
+                })
+            ;
+        });
 
-        if (res) {
-            console.log(test.validMessage);
-        } else {
-            console.error(test.errorMessage);
-        }
+        testArr.push(promise);
+    } else {
+        const result = check;
+
+        const promise = new Promise((resolve) => {
+            if (result) {
+                resolve(test.validMessage);
+            } else {
+                resolve(test.errorMessage);
+            }
+        });
+
+        testArr.push(promise);
     }
 });
 
-console.groupEnd(CONSOLE_GROUP_NAME);
+Promise.all(testArr)
+    .then((resArr) => {
+        resArr.forEach((res) => {
+            console.log(res);
+        });
+        console.groupEnd(CONSOLE_GROUP_NAME);
+    })
+    .catch((err) => {
+        console.log('エラーが発生しました:', err);
+        console.groupEnd(CONSOLE_GROUP_NAME);
+    });
+;
