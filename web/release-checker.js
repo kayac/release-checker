@@ -25,9 +25,16 @@ console.group(CONSOLE_GROUP_NAME);
         name: 'OGP Image', 
         validMessage: 'OGP画像が設定されています',
         errorMessage: 'OGP画像がありません',
-        check: (cb) => {
-            var meta = document.querySelector('meta[property="og:image"]');
-            return meta;
+        check: () => {
+            return new Promise((resolve, reject) => {
+                var meta = document.querySelector('meta[property="og:image"]');
+
+                if (false) {
+                    resolve(200);
+                } else {
+                    reject(500);
+                }
+            });
         }
     }),
     new ReleaseTest({
@@ -40,10 +47,25 @@ console.group(CONSOLE_GROUP_NAME);
         }
     })
 ].forEach((test) => {
-    if (test.check()) {
-        console.log(test.validMessage);
+    const check = test.check();
+
+    if (check instanceof Promise) {
+        check
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((res) => {
+                console.log(res);
+            })
+        ;
     } else {
-        console.error(test.errorMessage);
+        const res = check;
+
+        if (res) {
+            console.log(test.validMessage);
+        } else {
+            console.error(test.errorMessage);
+        }
     }
 });
 
