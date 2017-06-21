@@ -43,7 +43,7 @@ console.group(CONSOLE_GROUP_NAME);
         name: 'TODO Check',
         validMessage: 'TODO残っていません',
         errorMessage: 'TODOが記述されています',
-        check: (db) => {
+        check: (cb) => {
             var allHtml = document.getElementsByTagName('html')[0].childNodes;
             var commentArray = [];
             // nodeを入れるとfilter掛けてコメント抽出してくれる君(nodeList -> Array)
@@ -52,40 +52,42 @@ console.group(CONSOLE_GROUP_NAME);
                     commentArray.push(_node.data);
                 }
             };
-
             // 再帰してノード総ナメして吐き出してくれる君
-            var findCommemtNode = (_node) => {
-                // ノード取得
-                var currentNode = _node;
+            var findCommentNode = (_node) => {
                 // 子ノードがあるか判定
-                for (var i = 0; i < currentNode.length; i++) {
-                    if (!currentNode[i].hasChildNodes()) {
-                        pickComment(currentNode[i]);
+                for (var i = 0; i <  _node.length; i++) {
+                    if (!_node[i].hasChildNodes()) {
+                        pickComment(_node[i]);
                     } else {
-                        findCommemtNode(currentNode[i].childNodes);
+                        findCommentNode(_node[i].childNodes);
                     }
                 }
                 //見つけたやつを吐き出す
                 return commentArray;
             };
-            
+            // var findCommentNode = (_node) => {
+            //     var commentArray = [];
+                
+            //     if(!_node[1].hasChildNodes()) {
+            //         console.log(_node);
+            //         pickComment(_node);
+            //     } else {
+            //         // 配列をつなげて新しい配列を代入する
+            //         commentArray = commentArray.concat(findCommentNode(`こども`));
+            //     }
+            //     return commentArray;
+            // }
             // TODOってワードが含まれているか見つける君
             var checkWord = (_target) => {
                 var ngWord = ["TODO", "todo"];
-                var isWord = [ngWord.length];
-                ngWord.forEach((e, i) => {
-                    if (_target.indexOf(e) != -1) {
-                    // 含んでいる場合
-                        isWord[i] = false;
-                    } else {
-                        isWord[i] = true;
-                    }
+                return ngWord.every((word) => {
+                    // 含まれていなかったら-1を返す
+                    return _target.indexOf(word) < 0;
                 });
-                isWord = isWord.every((e) => (e == true));
-                return isWord;
-            }
+            };
+
             // 全てのコメントを引っ張ってきた配列から"TODO"ってワードが含まれているか探す。
-            return findCommemtNode(allHtml).every(checkWord)
+            return findCommentNode(allHtml).every(checkWord);
         }
     })
 ].forEach((test) => {
