@@ -45,32 +45,19 @@ console.group(CONSOLE_GROUP_NAME);
         errorMessage: 'TODOが記述されています',
         check: (cb) => {
             var allHtml = document.getElementsByTagName('html')[0].childNodes;
-            // nodeを入れるとfilter掛けてコメント抽出してくれる君(nodeList -> Array)
+            // nodeを入れるとfilter掛けてコメント抽出してくれる君。保存先はterget(nodeList -> Array)
             var pickComment = (_node, _target) => {
                 if (_node.nodeType === Node.COMMENT_NODE) {
                     _target.push(_node.data);
                 }
             };
-            // 再帰してノード総ナメして吐き出してくれる君
-            // var findCommentNode = (_node) => {
-            //     // 子ノードがあるか判定
-            //     for (var i = 0; i <  _node.length; i++) {
-            //         if (!_node[i].hasChildNodes()) {
-            //             pickComment(_node[i]);
-            //         } else {
-            //             findCommentNode(_node[i].childNodes);
-            //         }
-            //     }
-            //     //見つけたやつを吐き出す
-            //     return commentArray;
-            // };
             var findCommentNode = (_nodeList) => {
                 var commentArray = [];
                 for (var i = 0; i < _nodeList.length; i++) {
                     if(!_nodeList[i].hasChildNodes()) {
                         pickComment(_nodeList[i], commentArray);
                     } else {
-                        // 配列をつなげて新しい配列を代入する
+                        // childNode持ってたらchildNodeをつなげた新しい配列を代入して再帰
                         commentArray = commentArray.concat(findCommentNode(_nodeList[i].childNodes));
                     }
                 }
@@ -84,7 +71,6 @@ console.group(CONSOLE_GROUP_NAME);
                     return _target.indexOf(word) < 0;
                 });
             };
-
             // 全てのコメントを引っ張ってきた配列から"TODO"ってワードが含まれているか探す。
             return findCommentNode(allHtml).every(checkWord);
         }
