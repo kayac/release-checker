@@ -76,10 +76,11 @@ Promise.all(testArr)
         resArr.forEach((res) => {
             console.log(res);
         });
-        console.groupEnd(CONSOLE_GROUP_NAME);
     })
     .catch((err) => {
         console.log('エラーが発生しました:', err);
+    })
+    .then(() => {
         console.groupEnd(CONSOLE_GROUP_NAME);
-    });
+    })
 ;
