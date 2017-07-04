@@ -18,79 +18,57 @@ console.group(CONSOLE_GROUP_NAME);
         name: 'Google Analytics', 
         validMessage: 'Google Analyticsタグが読み込まれています',
         errorMessage: 'Google Analyticsタグが確認できません',
-        check: () => {
-            return new Promise((resolve, reject) => {
-                const key = window.GoogleAnalyticsObject;
+        check: new Promise((resolve, reject) => {
+            const key = window.GoogleAnalyticsObject;
 
-                if (key && !!window[key]) {
-                    resolve();
-                } else {
-                    reject();
-                }
-            });
-        }
+            if (key && !!window[key]) {
+                resolve();
+            } else {
+                reject();
+            }
+        })
     }),
     new ReleaseTest({
         name: 'OGP Image', 
         validMessage: 'OGP画像が設定されています',
         errorMessage: 'OGP画像がありません',
-        check: () => {
-            return new Promise((resolve, reject) => {
-                const meta = document.querySelector('meta[property="og:image"]');
+        check: new Promise((resolve, reject) => {
+            const meta = document.querySelector('meta[property="og:image"]');
 
-                if (meta) {
-                    resolve();
-                } else {
-                    reject();
-                }
-            });
-        }
+            if (meta) {
+                resolve();
+            } else {
+                reject();
+            }
+        })
     }),
     new ReleaseTest({
         name: 'Twitter Cards', 
         validMessage: 'Twitter cardsが設定されています',
         errorMessage: 'Twitter cardsがありません',
-        check: () => {
-            return new Promise((resolve, reject) => {
-                const meta = document.querySelector('meta[property="twitter:image"]') || document.querySelector('meta[name="twitter:image"]');
+        check: new Promise((resolve, reject) => {
+            const meta = document.querySelector('meta[property="twitter:image"]') || document.querySelector('meta[name="twitter:image"]');
 
-                if (meta) {
-                    resolve();
-                } else {
-                    reject();
-                }
-            });
-        }
+            if (meta) {
+                resolve();
+            } else {
+                reject();
+            }
+        })
     })
 ].forEach((test) => {
-    const check = test.check();
-
-    if (check instanceof Promise) {
-        const promise = new Promise((resolve) => {
-            check
-                .then((_res) => {
-                    resolve(test.validMessage);
-                })
-                .catch((_res) => {
-                    resolve(test.errorMessage);
-                })
-            ;
-        });
-
-        testArr.push(promise);
-    } else {
-        const result = check;
-
-        const promise = new Promise((resolve) => {
-            if (result) {
+    const promise = new Promise((resolve) => {
+        test.check
+            .then((_res) => {
                 resolve(test.validMessage);
-            } else {
+            })
+            .catch((_res) => {
                 resolve(test.errorMessage);
-            }
-        });
+            })
+        ;
+    });
 
-        testArr.push(promise);
-    }
+    testArr.push(promise);
 });
 
 Promise.all(testArr)
