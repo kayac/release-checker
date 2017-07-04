@@ -19,8 +19,15 @@ console.group(CONSOLE_GROUP_NAME);
         validMessage: 'Google Analyticsタグが読み込まれています',
         errorMessage: 'Google Analyticsタグが確認できません',
         check: () => {
-            var key = window.GoogleAnalyticsObject;
-            return key && !!window[key];
+            return new Promise((resolve, reject) => {
+                const key = window.GoogleAnalyticsObject;
+
+                if (key && !!window[key]) {
+                    resolve();
+                } else {
+                    reject();
+                }
+            });
         }
     }),
     new ReleaseTest({
@@ -43,9 +50,16 @@ console.group(CONSOLE_GROUP_NAME);
         name: 'Twitter Cards', 
         validMessage: 'Twitter cardsが設定されています',
         errorMessage: 'Twitter cardsがありません',
-        check: (cb) => {
-            var meta = document.querySelector('meta[property="twitter:image"]') || document.querySelector('meta[name="twitter:image"]');
-            return meta;
+        check: () => {
+            return new Promise((resolve, reject) => {
+                const meta = document.querySelector('meta[property="twitter:image"]') || document.querySelector('meta[name="twitter:image"]');
+
+                if (meta) {
+                    resolve();
+                } else {
+                    reject();
+                }
+            });
         }
     })
 ].forEach((test) => {
