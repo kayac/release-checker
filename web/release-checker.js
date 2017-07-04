@@ -63,34 +63,18 @@ console.group(CONSOLE_GROUP_NAME);
         }
     })
 ].forEach((test) => {
-    const check = test.check();
-
-    if (check instanceof Promise) {
-        const promise = new Promise((resolve) => {
-            check
-                .then((_res) => {
-                    resolve(test.validMessage);
-                })
-                .catch((_res) => {
-                    resolve(test.errorMessage);
-                })
-            ;
-        });
-
-        testArr.push(promise);
-    } else {
-        const result = check;
-
-        const promise = new Promise((resolve) => {
-            if (result) {
+    const promise = new Promise((resolve) => {
+        test.check()
+            .then((_res) => {
                 resolve(test.validMessage);
-            } else {
+            })
+            .catch((_res) => {
                 resolve(test.errorMessage);
-            }
-        });
+            })
+        ;
+    });
 
-        testArr.push(promise);
-    }
+    testArr.push(promise);
 });
 
 Promise.all(testArr)
