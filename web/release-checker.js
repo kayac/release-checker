@@ -1,5 +1,7 @@
 const CONSOLE_GROUP_NAME = 'release-checker';
 
+const testArr = [];
+
 class ReleaseTest {
     constructor (opts) {
         this.name = opts.name;
@@ -17,26 +19,47 @@ console.group(CONSOLE_GROUP_NAME);
         validMessage: 'Google Analyticsタグが読み込まれています',
         errorMessage: 'Google Analyticsタグが確認できません',
         check: () => {
-            var key = window.GoogleAnalyticsObject;
-            return key && !!window[key];
+            return new Promise((resolve, reject) => {
+                const key = window.GoogleAnalyticsObject;
+
+                if (key && !!window[key]) {
+                    resolve();
+                } else {
+                    reject();
+                }
+            });
         }
     }),
     new ReleaseTest({
         name: 'OGP Image', 
         validMessage: 'OGP画像が設定されています',
         errorMessage: 'OGP画像がありません',
-        check: (cb) => {
-            var meta = document.querySelector('meta[property="og:image"]');
-            return meta;
+        check: () => {
+            return new Promise((resolve, reject) => {
+                const meta = document.querySelector('meta[property="og:image"]');
+
+                if (meta) {
+                    resolve();
+                } else {
+                    reject();
+                }
+            });
         }
     }),
     new ReleaseTest({
         name: 'Twitter Cards', 
         validMessage: 'Twitter cardsが設定されています',
         errorMessage: 'Twitter cardsがありません',
-        check: (cb) => {
-            var meta = document.querySelector('meta[property="twitter:image"]') || document.querySelector('meta[name="twitter:image"]');
-            return meta;
+        check: () => {
+            return new Promise((resolve, reject) => {
+                const meta = document.querySelector('meta[property="twitter:image"]') || document.querySelector('meta[name="twitter:image"]');
+
+                if (meta) {
+                    resolve();
+                } else {
+                    reject();
+                }
+            });
         }
     }),
     new ReleaseTest({
@@ -76,11 +99,30 @@ console.group(CONSOLE_GROUP_NAME);
         }
     })
 ].forEach((test) => {
-    if (test.check()) {
-        console.log(test.validMessage);
-    } else {
-        console.error(test.errorMessage);
-    }
+    const promise = new Promise((resolve) => {
+        test.check()
+            .then((_res) => {
+                resolve(test.validMessage);
+            })
+            .catch((_res) => {
+                resolve(test.errorMessage);
+            })
+        ;
+    });
+
+    testArr.push(promise);
 });
 
-console.groupEnd(CONSOLE_GROUP_NAME);
+Promise.all(testArr)
+    .then((resArr) => {
+        resArr.forEach((res) => {
+            console.log(res);
+        });
+    })
+    .catch((err) => {
+        console.log('エラーが発生しました:', err);
+    })
+    .then(() => {
+        console.groupEnd(CONSOLE_GROUP_NAME);
+    })
+;
